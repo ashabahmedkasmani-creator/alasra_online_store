@@ -4,6 +4,7 @@ import Featured from '../components/Featured'
 import HScroll from '../components/HScroll'
 import Cinema from '../components/Cinema'
 import Shelf from '../components/Shelf'
+import Story from '../components/Story'
 import Img from '../components/Img'
 import { PRODUCTS, CATEGORIES } from '../lib/data'
 const CATS = CATEGORIES.slice(1, 5).map((c) => { const l = PRODUCTS.filter((p) => p.cat === c); return [c, l.length + ' products', l[0].image] })
@@ -28,6 +29,7 @@ export default function Home() {
         <div className="obv">{two.map((p, n) => <div key={p.id} className={'ob ob' + n}><Img src={p.image} alt={p.name} /></div>)}</div>
       </section>
       <HScroll />
+      <Story />
       <Shelf />
       <div className="marquee"><div>{TICK.repeat(6)}</div></div>
       <section className="pmq"><div>{Array.from({ length: 2 * Math.ceil(10 / strip.length) }, () => strip).flat().map((p, i) => <Link key={i} href={'/product/' + p.slug}><img src={p.image} alt={p.name} /></Link>)}</div></section>
