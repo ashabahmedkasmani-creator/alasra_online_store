@@ -1,0 +1,1 @@
+self.__REACT_LOADABLE_MANIFEST="{\"components\\\\Root.js -> lenis\":{\"id\":\"components\\\\Root.js -> lenis\",\"files\":[\"static/chunks/_app-pages-browser_node_modules_lenis_dist_lenis_mjs.js\"]},\"components\\\\Shelf.js -> ./Shelf3D\":{\"id\":\"components\\\\Shelf.js -> ./Shelf3D\",\"files\":[\"static/chunks/_app-pages-browser_components_Shelf3D_js.js\"]}}"
