@@ -1,4 +1,4 @@
-// File: E:\alasraaaaaaaa\alasra\app\about\page.js
+// File: E:\websites\al_asra\alasra_online_store\app\about\page.js
 import * as entry from '../../../../app/about/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
