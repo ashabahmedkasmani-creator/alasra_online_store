@@ -1,48 +1,62 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import Img from './Img'
-import { PRODUCTS } from '../lib/data'
 
-// Al-Asra 404: full-viewport, no scroll. Reuses the global Header (nav) and brand tokens; everything else is scoped to html.nf.
+// TinyTrails 404 composition, Al-Asra branding/palette. The global Header/Footer are hidden on this page only (html.nf).
+const VIDEO = 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260713_234424_b1332b69-2e69-4302-8dbc-40f86846afbd.mp4'
+const NAV = [['Home', '/'], ['Shop', '/shop'], ['About', '/about'], ['Track order', '/track'], ['FAQ', '/faq'], ['Contact', '/contact']]
+const I = { fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'nf-ic', 'aria-hidden': true, viewBox: '0 0 24 24' }
+const MenuI = () => <svg {...I}><path d="M4 12h16M4 6h16M4 18h16" /></svg>
+const XI = () => <svg {...I}><path d="M18 6 6 18M6 6l12 12" /></svg>
+const ArrowI = () => <svg {...I}><path d="m12 19-7-7 7-7M19 12H5" /></svg>
+
 export default function NotFoundView() {
-  const stage = useRef(null)
-  const p = PRODUCTS[0]
+  const stage = useRef(null), num = useRef(null)
+  const [open, setOpen] = useState(false)
   useEffect(() => {
     const root = document.documentElement, prev = document.title
     document.title = '404 — Page Not Found | Al-Asra'
     root.classList.add('nf')
-    // start the stage right under the (existing) announce bar + nav, whatever height they have
     const fit = () => {
-      const h = document.querySelector('.nav'); if (!h || !stage.current) return
-      stage.current.style.setProperty('--nft', Math.ceil(h.getBoundingClientRect().bottom) + 'px')
+      const el = num.current; if (!el || !stage.current || !el.offsetHeight) return
+      stage.current.style.setProperty('--nfy', String((innerHeight / el.offsetHeight) * 1.4))
     }
-    fit(); addEventListener('resize', fit); const t = setTimeout(fit, 400)
-    // subtle desktop-only parallax (max ~12px)
-    let raf = 0, tx = 0, ty = 0
-    const fine = matchMedia('(hover:hover) and (pointer:fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches
-    const mm = (e) => {
-      tx = e.clientX / innerWidth - 0.5; ty = e.clientY / innerHeight - 0.5
-      if (!raf) raf = requestAnimationFrame(() => { raf = 0; stage.current && (stage.current.style.setProperty('--mx', tx.toFixed(3)), stage.current.style.setProperty('--my', ty.toFixed(3))) })
-    }
-    if (fine) addEventListener('mousemove', mm)
-    return () => { root.classList.remove('nf'); document.title = prev; removeEventListener('resize', fit); removeEventListener('mousemove', mm); clearTimeout(t); if (raf) cancelAnimationFrame(raf) }
+    fit(); addEventListener('resize', fit)
+    document.fonts?.ready.then(fit)
+    const t = setTimeout(fit, 300)
+    const esc = (e) => e.key === 'Escape' && setOpen(false)
+    addEventListener('keydown', esc)
+    return () => { root.classList.remove('nf'); document.title = prev; removeEventListener('resize', fit); removeEventListener('keydown', esc); clearTimeout(t) }
   }, [])
   return (
-    <section className="nf-stage" ref={stage} aria-labelledby="nf-title">
-      <div className="nf-bg" aria-hidden="true" />
-      <div className="nf-num" aria-hidden="true"><span>404</span></div>
-      <div className="nf-vis">
-        {p && <div className="nf-prod"><Img src={p.image} color={p.color} alt="" /><i className="nf-shadow" aria-hidden="true" /></div>}
+    <div className="nf-stage" ref={stage}>
+      <div className="nf-bgl" aria-hidden="true">
+        <span className="nf-404" ref={num}>404</span>
+        <div className="nf-oval" />
       </div>
-      <div className="nf-msg">
-        <h1 id="nf-title">Looks like you&rsquo;ve wandered off the shelves.</h1>
-        <p>Let&rsquo;s get you back to the store.</p>
-        <div className="nf-cta">
-          <Link className="btn" href="/">Back to Home</Link>
-          <Link className="nf-sec" href="/shop">Continue Shopping</Link>
-        </div>
+      <div className="nf-vid" aria-hidden="true">
+        <div><video src={VIDEO} autoPlay loop muted playsInline preload="auto" onError={(e) => (e.currentTarget.style.display = 'none')} /></div>
       </div>
-    </section>
+      <header className="nf-nav">
+        <Link href="/" className="nf-logo" aria-label="Al-Asra Store home"><img src="/logo.png" alt="Al-Asra Store" /></Link>
+        <nav className="nf-links" aria-label="Main">{NAV.map(([t, h]) => <Link key={h} href={h} className="nf-pill">{t}</Link>)}</nav>
+        <button className="nf-pill nf-menubtn" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open}><MenuI />Menu</button>
+      </header>
+      <div className="nf-bottom">
+        <h1>Oops, something went wrong!</h1>
+        <Link href="/" className="nf-cta"><ArrowI />Back to Home</Link>
+      </div>
+      <div className={'nf-ov' + (open ? ' on' : '')} aria-hidden={!open}>
+        <div className="nf-back" onClick={() => setOpen(false)} />
+        <aside className="nf-panel">
+          <div className="nf-ph">
+            <span className="nf-logo"><img src="/logo.png" alt="Al-Asra Store" /></span>
+            <button className="nf-x" onClick={() => setOpen(false)} aria-label="Close menu"><XI /></button>
+          </div>
+          <nav className="nf-items">{NAV.map(([t, h], i) => <Link key={h} href={h} style={{ '--i': i }} onClick={() => setOpen(false)}>{t}</Link>)}</nav>
+          <div className="nf-pb"><Link href="/" onClick={() => setOpen(false)}><ArrowI />Back to Home</Link></div>
+        </aside>
+      </div>
+    </div>
   )
 }
